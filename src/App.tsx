@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Users, BarChart3, Archive, Calendar, Settings, LogOut, Wrench, Activity } from 'lucide-react';
+import { Plus, Users, BarChart3, Archive, Calendar, Wrench, Activity } from 'lucide-react';
+import { LoginForm } from './components/LoginForm';
+import { Header } from './components/Header';
+import { UserProfile } from './components/UserProfile';
 import { TaskCard } from './components/TaskCard';
 import { PerformanceChart } from './components/PerformanceChart';
 import { TaskAssignmentModal } from './components/TaskAssignmentModal';
@@ -11,21 +14,87 @@ import { TeamStatusOverview } from './components/TeamStatusOverview';
 import { RecentActivities } from './components/RecentActivities';
 import { ActiveTasks } from './components/ActiveTasks';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { Task, Employee, TaskAssignment, DailyReport, PerformanceMetric } from './types';
+import { Task, Employee, TaskAssignment, DailyReport, PerformanceMetric, User } from './types';
 import { defaultTasks } from './data/defaultTasks';
 import { defaultEmployees } from './data/defaultEmployees';
+import { defaultUsers } from './data/defaultUsers';
 import { formatDate, getMinutesBetween } from './utils/dateUtils';
 import { calculatePerformanceMetrics } from './utils/performanceUtils';
 
 function App() {
   const [currentView, setCurrentView] = useState<'dashboard' | 'daily' | 'performance' | 'history' | 'manage' | 'employees'>('dashboard');
-  const [currentUser, setCurrentUser] = useState<'leader' | string>('leader'); // 'leader' or employee ID
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [users, setUsers] = useLocalStorage<User[]>('hospitality_users', defaultUsers);
   const [tasks, setTasks] = useLocalStorage<Task[]>('hospitality_tasks', defaultTasks);
   const [employees, setEmployees] = useLocalStorage<Employee[]>('hospitality_employees', defaultEmployees);
   const [assignments, setAssignments] = useLocalStorage<TaskAssignment[]>('hospitality_assignments', []);
   const [dailyReports, setDailyReports] = useLocalStorage<DailyReport[]>('hospitality_reports', []);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
+
+  // Handle login
+  const handleLogin = async (email: string, password: string) => {
+    setIsLoading(true);
+    setLoginError('');
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Find user by email
+    const user = users.find(u => u.email === email);
+    
+    // Simple password validation (in real app, this would be hashed)
+    const validPasswords: { [key: string]: string } = {
+      'tamer@hospitality.com': 'leader123',
+      'sarah@hospitality.com': 'emp123',
+      'michael@hospitality.com': 'emp123',
+      'emma@hospitality.com': 'emp123',
+      'david@hospitality.com': 'emp123',
+      'lisa@hospitality.com': 'emp123'
+    };
+    
+    if (user && validPasswords[email] === password) {
+      // Update last login
+      const updatedUser = { ...user, lastLogin: new Date() };
+      setUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+      
+      setCurrentUser(updatedUser);
+      setIsAuthenticated(true);
+    } else {
+      setLoginError('Invalid email or password');
+    }
+    
+    setIsLoading(false);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setCurrentView('dashboard');
+  };
+
+  // Handle profile update
+  const handleUpdateUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    setCurrentUser(updatedUser);
+  };
+
+  // Show login form if not authenticated
+  if (!isAuthenticated || !currentUser) {
+    return (
+      <LoginForm 
+        onLogin={handleLogin}
+        isLoading={isLoading}
+        error={loginError}
+      />
+    );
+  }
 
   const today = formatDate(new Date());
   const todaysAssignments = assignments.filter(a => a.date === today);
@@ -149,16 +218,16 @@ function App() {
     return tasks.filter(task => !assignedTaskIds.has(task.id));
   };
 
-  // If current user is an employee, show employee dashboard
-  if (currentUser !== 'leader') {
-    const employee = employees.find(e => e.id === currentUser);
+  // If current user is an employee, show employee dashboard  
+  if (currentUser.role === 'employee') {
+    const employee = employees.find(e => e.id === currentUser.employeeId);
     if (!employee) {
-      setCurrentUser('leader');
+      handleLogout();
       return null;
     }
     
-    const employeeMetric = performanceMetrics.find(m => m.employeeId === currentUser) || {
-      employeeId: currentUser,
+    const employeeMetric = performanceMetrics.find(m => m.employeeId === currentUser.employeeId) || {
+      employeeId: currentUser.employeeId!,
       employeeName: employee.name,
       totalTasks: 0,
       completedTasks: 0,
@@ -169,16 +238,30 @@ function App() {
     };
     
     return (
-      <EmployeeDashboard
-        employee={employee}
-        assignments={assignments}
-        tasks={tasks}
-        performanceMetric={employeeMetric}
-        onStartTask={startTask}
-        onCompleteTask={completeTask}
-        onPauseTask={pauseTask}
-        onUpdateNotes={updateNotes}
-      />
+      <div>
+        <Header 
+          user={currentUser}
+          onShowProfile={() => setShowProfile(true)}
+          onLogout={handleLogout}
+        />
+        <EmployeeDashboard
+          employee={employee}
+          assignments={assignments}
+          tasks={tasks}
+          performanceMetric={employeeMetric}
+          onStartTask={startTask}
+          onCompleteTask={completeTask}
+          onPauseTask={pauseTask}
+          onUpdateNotes={updateNotes}
+        />
+        {showProfile && (
+          <UserProfile
+            user={currentUser}
+            onUpdateUser={handleUpdateUser}
+            onClose={() => setShowProfile(false)}
+          />
+        )}
+      </div>
     );
   }
 
@@ -193,47 +276,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Hospitality Task Manager</h1>
-                <p className="text-sm text-gray-600">Income Team Leader Dashboard</p>
-              </div>
-            </div>
-            
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Welcome, Tamer</p>
-              <p className="text-xs text-gray-600">
-                {new Date().toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <select
-                value={currentUser}
-                onChange={(e) => setCurrentUser(e.target.value)}
-                className="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="leader">Team Leader View</option>
-                {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.name} (Employee)</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        user={currentUser}
+        onShowProfile={() => setShowProfile(true)}
+        onLogout={handleLogout}
+      />
 
       {/* Navigation */}
       <nav className="bg-white border-b">
@@ -434,6 +481,15 @@ function App() {
           />
         )}
       </main>
+
+      {/* User Profile Modal */}
+      {showProfile && (
+        <UserProfile
+          user={currentUser}
+          onUpdateUser={handleUpdateUser}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
 
       {/* Task Assignment Modal */}
       <TaskAssignmentModal

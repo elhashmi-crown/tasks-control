@@ -42,30 +42,8 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Employee Dashboard</h1>
-                <p className="text-sm text-gray-600">Income Team Task Management</p>
-              </div>
-            </div>
-            
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Welcome, {employee.name}</p>
-              <p className="text-xs text-gray-600">{employee.role}</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">

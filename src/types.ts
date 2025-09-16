@@ -51,3 +51,19 @@ export interface DailyReport {
   };
   employeeMetrics: PerformanceMetric[];
 }
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'team_leader' | 'employee';
+  employeeId?: string; // Only for employee users
+  avatar?: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+    language: string;
+  };
+  lastLogin: Date;
+  createdAt: Date;
+}
