@@ -37,6 +37,60 @@ function App() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
 
+  // Handle sign up
+  const handleSignUp = async (userData: any) => {
+    setIsLoading(true);
+    setLoginError('');
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Check if user already exists
+    const existingUser = users.find(u => u.email === userData.email);
+    if (existingUser) {
+      setLoginError('An account with this email already exists');
+      setIsLoading(false);
+      return;
+    }
+    
+    // Create new user
+    const newUser: User = {
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      email: userData.email,
+      name: userData.name,
+      role: userData.role,
+      phone: userData.phone,
+      department: userData.department,
+      twoFactorEnabled: false,
+      preferences: {
+        theme: 'light',
+        notifications: true,
+        emailNotifications: true,
+        smsNotifications: false,
+        language: 'en'
+      },
+      lastLogin: new Date(),
+      createdAt: new Date()
+    };
+    
+    // If employee role, create employee record
+    if (userData.role === 'employee') {
+      const newEmployee: Employee = {
+        id: `emp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: userData.name,
+        role: userData.department || 'General Staff',
+        isActive: true
+      };
+      
+      newUser.employeeId = newEmployee.id;
+      setEmployees(prev => [...prev, newEmployee]);
+    }
+    
+    setUsers(prev => [...prev, newUser]);
+    setCurrentUser(newUser);
+    setIsAuthenticated(true);
+    setIsLoading(false);
+  };
   // Handle login
   const handleLogin = async (email: string, password: string) => {
     setIsLoading(true);
@@ -90,6 +144,7 @@ function App() {
     return (
       <LoginForm 
         onLogin={handleLogin}
+        onSignUp={handleSignUp}
         isLoading={isLoading}
         error={loginError}
       />
