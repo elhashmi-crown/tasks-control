@@ -59,11 +59,28 @@ export interface User {
   role: 'team_leader' | 'employee';
   employeeId?: string; // Only for employee users
   avatar?: string;
+  phone?: string;
+  department?: string;
+  twoFactorEnabled: boolean;
+  twoFactorSecret?: string;
   preferences: {
     theme: 'light' | 'dark';
     notifications: boolean;
+    emailNotifications: boolean;
+    smsNotifications: boolean;
     language: string;
   };
   lastLogin: Date;
   createdAt: Date;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+  createdAt: Date;
+  actionUrl?: string;
 }
