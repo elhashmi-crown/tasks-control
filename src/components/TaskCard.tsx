@@ -12,6 +12,7 @@ interface TaskCardProps {
   onCompleteTask?: (assignmentId: string, notes: string) => void;
   onPauseTask?: (assignmentId: string) => void;
   onUpdateNotes?: (assignmentId: string, notes: string) => void;
+  onSendNotification?: (taskId: string, employeeId: string) => void;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -23,6 +24,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onCompleteTask,
   onPauseTask,
   onUpdateNotes
+  onSendNotification
 }) => {
   const getPriorityColor = () => {
     switch (task.priority) {
@@ -149,6 +151,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               Resume
             </button>
           )}
+        </div>
+      )}
+
+      {isLeaderView && employee && assignment.status !== 'completed' && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <button
+            onClick={() => onSendNotification?.(task.id, employee.id)}
+            className="w-full px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+          >
+            Send Notification
+          </button>
         </div>
       )}
 

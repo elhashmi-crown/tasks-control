@@ -3,9 +3,11 @@ import { Plus, Users, BarChart3, Archive, Calendar, Wrench, Activity } from 'luc
 import { LoginForm } from './components/LoginForm';
 import { Header } from './components/Header';
 import { UserProfile } from './components/UserProfile';
+import { AccountSettings } from './components/AccountSettings';
 import { TaskCard } from './components/TaskCard';
 import { PerformanceChart } from './components/PerformanceChart';
 import { TaskAssignmentModal } from './components/TaskAssignmentModal';
+import { TaskNotificationModal } from './components/TaskNotificationModal';
 import { HistoryView } from './components/HistoryView';
 import { EmployeeDashboard } from './components/EmployeeDashboard';
 import { TaskManagement } from './components/TaskManagement';
@@ -26,6 +28,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
@@ -36,6 +39,8 @@ function App() {
   const [dailyReports, setDailyReports] = useLocalStorage<DailyReport[]>('hospitality_reports', []);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [selectedTaskForNotification, setSelectedTaskForNotification] = useState<{ task: Task; employee: Employee } | null>(null);
 
   // Handle sign up
   const handleSignUp = async (userData: any) => {
@@ -139,6 +144,26 @@ function App() {
     setCurrentUser(updatedUser);
   };
 
+  // Handle task notification
+  const handleSendTaskNotification = (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent') => {
+    const employee = employees.find(e => e.id === employeeId);
+    const task = tasks.find(t => t.id === taskId);
+    
+    if (employee && task) {
+      // In a real app, this would send an actual notification
+      alert(`${priority === 'urgent' ? 'Urgent notification' : 'Notification'} sent to ${employee.name} about "${task.name}"`);
+      
+      // You could also add this to a notifications system
+      console.log('Notification sent:', {
+        to: employee.name,
+        task: task.name,
+        message,
+        priority,
+        timestamp: new Date()
+      });
+    }
+  };
+
   // Show login form if not authenticated
   if (!isAuthenticated || !currentUser) {
     return (
@@ -174,6 +199,20 @@ function App() {
     };
 
     setAssignments(prev => [...prev, newAssignment]);
+  };
+
+  const unassignTask = (taskId: string) => {
+    setAssignments(prev => prev.filter(a => a.taskId !== taskId || a.date !== today));
+  };
+
+  const reassignTask = (taskId: string, newEmployeeId: string) => {
+    setAssignments(prev =>
+      prev.map(assignment =>
+        assignment.taskId === taskId && assignment.date === today
+          ? { ...assignment, employeeId: newEmployeeId, assignedAt: new Date() }
+          : assignment
+      )
+    );
   };
 
   const startTask = (assignmentId: string) => {
@@ -273,6 +312,19 @@ function App() {
     return tasks.filter(task => !assignedTaskIds.has(task.id));
   };
 
+  const getCurrentAssignment = (taskId: string) => {
+    const assignment = todaysAssignments.find(a => a.taskId === taskId);
+    if (assignment) {
+      const employee = employees.find(e => e.id === assignment.employeeId);
+      return employee ? { employeeId: employee.id, employeeName: employee.name } : null;
+    }
+    return null;
+  };
+
+  const getAssignedEmployeeIds = () => {
+    return todaysAssignments.map(a => a.employeeId);
+  };
+
   // If current user is an employee, show employee dashboard  
   if (currentUser.role === 'employee') {
     const employee = employees.find(e => e.id === currentUser.employeeId);
@@ -297,6 +349,7 @@ function App() {
         <Header 
           user={currentUser}
           onShowProfile={() => setShowProfile(true)}
+          onShowAccountSettings={() => setShowAccountSettings(true)}
           onLogout={handleLogout}
         />
         <EmployeeDashboard
@@ -314,6 +367,13 @@ function App() {
             user={currentUser}
             onUpdateUser={handleUpdateUser}
             onClose={() => setShowProfile(false)}
+          />
+        )}
+        {showAccountSettings && (
+          <AccountSettings
+            user={currentUser}
+            onUpdateUser={handleUpdateUser}
+            onClose={() => setShowAccountSettings(false)}
           />
         )}
       </div>
@@ -334,6 +394,7 @@ function App() {
       <Header 
         user={currentUser}
         onShowProfile={() => setShowProfile(true)}
+        onShowAccountSettings={() => setShowAccountSettings(true)}
         onLogout={handleLogout}
       />
 
@@ -435,11 +496,11 @@ function App() {
                 <button
                   onClick={() => {
                     const availableTasks = getAvailableTasks();
-                    if (availableTasks.length === 0) {
-                      alert('All tasks have been assigned for today.');
+                    if (availableTasks.length === 0 && todaysAssignments.length === tasks.length) {
+                      alert('All tasks have been assigned for today. You can reassign existing tasks if needed.');
                       return;
                     }
-                    setSelectedTask(availableTasks[0]);
+                    setSelectedTask(availableTasks.length > 0 ? availableTasks[0] : tasks[0]);
                     setIsAssignmentModalOpen(true);
                   }}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
@@ -467,7 +528,8 @@ function App() {
                 </p>
                 <button
                   onClick={() => {
-                    setSelectedTask(getAvailableTasks()[0]);
+                    const availableTasks = getAvailableTasks();
+                    setSelectedTask(availableTasks.length > 0 ? availableTasks[0] : tasks[0]);
                     setIsAssignmentModalOpen(true);
                   }}
                   className="px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
@@ -490,6 +552,14 @@ function App() {
                       task={task}
                       employee={employee || null}
                       isLeaderView={true}
+                      onSendNotification={(taskId, employeeId) => {
+                        const taskObj = tasks.find(t => t.id === taskId);
+                        const empObj = employees.find(e => e.id === employeeId);
+                        if (taskObj && empObj) {
+                          setSelectedTaskForNotification({ task: taskObj, employee: empObj });
+                          setIsNotificationModalOpen(true);
+                        }
+                      }}
                     />
                   );
                 })}
@@ -545,6 +615,14 @@ function App() {
           onClose={() => setShowProfile(false)}
         />
       )}
+      
+      {showAccountSettings && (
+        <AccountSettings
+          user={currentUser}
+          onUpdateUser={handleUpdateUser}
+          onClose={() => setShowAccountSettings(false)}
+        />
+      )}
 
       {/* Task Assignment Modal */}
       <TaskAssignmentModal
@@ -555,7 +633,23 @@ function App() {
         }}
         task={selectedTask}
         employees={employees}
+        assignedTasks={getAssignedEmployeeIds()}
         onAssign={assignTask}
+        onUnassign={unassignTask}
+        onReassign={reassignTask}
+        currentAssignment={selectedTask ? getCurrentAssignment(selectedTask.id) : null}
+      />
+      
+      {/* Task Notification Modal */}
+      <TaskNotificationModal
+        isOpen={isNotificationModalOpen}
+        onClose={() => {
+          setIsNotificationModalOpen(false);
+          setSelectedTaskForNotification(null);
+        }}
+        task={selectedTaskForNotification?.task || null}
+        employee={selectedTaskForNotification?.employee || null}
+        onSendNotification={handleSendTaskNotification}
       />
     </div>
   );

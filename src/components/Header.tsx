@@ -5,10 +5,11 @@ import { User as UserType } from '../types';
 interface HeaderProps {
   user: UserType;
   onShowProfile: () => void;
+  onShowAccountSettings: () => void;
   onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onShowAccountSettings, onLogout }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [notifications] = useState([
     { id: 1, title: 'New task assigned', message: 'Revenue Reconciliation task assigned to you', unread: true },
@@ -154,7 +155,10 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                   </button>
                   
                   <button
-                    onClick={() => setShowDropdown(false)}
+                    onClick={() => {
+                      onShowAccountSettings();
+                      setShowDropdown(false);
+                    }}
                     className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <Settings className="w-4 h-4" />
