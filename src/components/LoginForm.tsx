@@ -320,23 +320,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSignUp, isLoadi
               </div>
             </div>
           )}
-            <p className="text-sm text-gray-600 mb-3">Demo Accounts:</p>
-            <div className="space-y-2">
-              {demoAccounts.map((account, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setEmail(account.email);
-                    setPassword(account.password);
-                  }}
-                  className="w-full text-left p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="text-sm font-medium text-gray-900">{account.email}</div>
-                  <div className="text-xs text-gray-600">{account.role}</div>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
