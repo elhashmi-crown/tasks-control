@@ -19,6 +19,21 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
   
   const unreadCount = notifications.filter(n => n.unread).length;
 
+  const markAllAsRead = () => {
+    // In a real app, this would update the backend
+    notifications.forEach(n => n.unread = false);
+    // Force re-render by updating state
+    setShowNotifications(false);
+    setTimeout(() => setShowNotifications(true), 0);
+  };
+
+  const markAsRead = (notificationId: number) => {
+    const notification = notifications.find(n => n.id === notificationId);
+    if (notification) {
+      notification.unread = false;
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,7 +93,11 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                   
                   <div className="max-h-64 overflow-y-auto">
                     {notifications.map(notification => (
-                      <div key={notification.id} className={`px-4 py-3 hover:bg-gray-50 transition-colors ${notification.unread ? 'bg-blue-50' : ''}`}>
+                      <div 
+                        key={notification.id} 
+                        className={`px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${notification.unread ? 'bg-blue-50' : ''}`}
+                        onClick={() => markAsRead(notification.id)}
+                      >
                         <div className="flex items-start gap-3">
                           <div className={`w-2 h-2 rounded-full mt-2 ${notification.unread ? 'bg-blue-500' : 'bg-gray-300'}`} />
                           <div className="flex-1">
@@ -92,6 +111,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                   
                   <div className="px-4 py-2 border-t border-gray-100">
                     <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                      onClick={markAllAsRead}
                       Mark all as read
                     </button>
                   </div>

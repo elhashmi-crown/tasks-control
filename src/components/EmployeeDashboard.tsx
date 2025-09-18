@@ -137,7 +137,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
               <span>Overall Performance Score</span>
               <span>{performanceMetric.qualityScore}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
                 className={`h-3 rounded-full transition-all ${
                   performanceMetric.qualityScore >= 90 ? 'bg-emerald-500' :
@@ -145,7 +145,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
                   performanceMetric.qualityScore >= 70 ? 'bg-green-500' :
                   performanceMetric.qualityScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                 }`}
-                style={{ width: `${performanceMetric.qualityScore}%` }}
+                style={{ width: `${Math.min(performanceMetric.qualityScore, 100)}%` }}
               />
             </div>
           </div>
