@@ -165,6 +165,9 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      </div>
       
       {/* Click outside to close dropdown */}
       {showDropdown && (
