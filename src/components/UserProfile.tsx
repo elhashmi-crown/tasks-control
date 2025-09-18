@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Shield, Calendar, Settings, Camera, Save, X, Phone, Building, Lock, Smartphone, Bell } from 'lucide-react';
+import { User, Mail, Shield, Calendar, Settings, Camera, Save, X, Phone, Building, Lock, Smartphone, Bell, Eye, EyeOff } from 'lucide-react';
 import { User as UserType } from '../types';
 
 interface UserProfileProps {
