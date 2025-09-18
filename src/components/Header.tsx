@@ -98,9 +98,6 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                 </div>
               )}
             </div>
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
 
             {/* User Dropdown */}
             <div className="relative">
@@ -168,9 +165,6 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onLogout })
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
       
       {/* Click outside to close dropdown */}
       {showDropdown && (
