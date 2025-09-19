@@ -631,13 +631,10 @@ function App() {
           setIsAssignmentModalOpen(false);
           setSelectedTask(null);
         }}
-        task={selectedTask}
+        tasks={tasks}
         employees={employees}
-        assignedTasks={getAssignedEmployeeIds()}
+        assignments={assignments}
         onAssign={assignTask}
-        onUnassign={unassignTask}
-        onReassign={reassignTask}
-        currentAssignment={selectedTask ? getCurrentAssignment(selectedTask.id) : null}
       />
       
       {/* Task Notification Modal */}
