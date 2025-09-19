@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Save, X, User, UserCheck, UserX } from 'lucide-react';
 import { Employee } from '../types';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface EmployeeManagementProps {
   employees: Employee[];
@@ -8,6 +9,7 @@ interface EmployeeManagementProps {
 }
 
 export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employees, onUpdateEmployees }) => {
+  const [roles] = useLocalStorage('hospitality_roles', []);
   const [isAddingEmployee, setIsAddingEmployee] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Employee>>({
@@ -16,18 +18,7 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
     isActive: true
   });
 
-  const roles = [
-    'Senior Revenue Analyst',
-    'Reservations Specialist',
-    'Payments Coordinator',
-    'Occupancy Analyst',
-    'Reconciliation Specialist',
-    'Revenue Manager',
-    'Guest Services Coordinator',
-    'Financial Analyst',
-    'Operations Specialist',
-    'Administrative Assistant'
-  ];
+  const activeRoles = roles.filter((role: any) => role.isActive);
 
   const handleSaveEmployee = () => {
     if (!formData.name?.trim() || !formData.role?.trim()) {
@@ -151,8 +142,8 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select a role</option>
-                {roles.map(role => (
-                  <option key={role} value={role}>{role}</option>
+                {activeRoles.map((role: any) => (
+                  <option key={role.id} value={role.name}>{role.name}</option>
                 ))}
               </select>
             </div>
