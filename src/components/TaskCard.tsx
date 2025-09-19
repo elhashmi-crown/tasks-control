@@ -23,7 +23,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onStartTask,
   onCompleteTask,
   onPauseTask,
-  onUpdateNotes
+  onUpdateNotes,
   onSendNotification
 }) => {
   const getPriorityColor = () => {
