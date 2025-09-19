@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Save, X, Clock, AlertTriangle } from 'lucide-react';
 import { Task } from '../types';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface TaskManagementProps {
   tasks: Task[];
@@ -8,24 +9,26 @@ interface TaskManagementProps {
 }
 
 export const TaskManagement: React.FC<TaskManagementProps> = ({ tasks, onUpdateTasks }) => {
+  const [categories] = useLocalStorage('hospitality_categories', [
+    { id: 'cat-1', name: 'reservations', description: 'Hotel booking and reservation management', color: 'blue', isActive: true },
+    { id: 'cat-2', name: 'payments', description: 'Payment processing and financial transactions', color: 'green', isActive: true },
+    { id: 'cat-3', name: 'reconciliation', description: 'Financial reconciliation and auditing', color: 'purple', isActive: true },
+    { id: 'cat-4', name: 'tracking', description: 'Occupancy and performance tracking', color: 'yellow', isActive: true },
+    { id: 'cat-5', name: 'admin', description: 'Administrative and general tasks', color: 'gray', isActive: true }
+  ]);
+  
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [editingTask, setEditingTask] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Task>>({
     name: '',
     description: '',
-    category: 'admin',
+    category: 'admin', 
     estimatedMinutes: 30,
     priority: 'medium',
     isRecurring: true
   });
 
-  const categories = [
-    { value: 'reservations', label: 'Reservations' },
-    { value: 'payments', label: 'Payments' },
-    { value: 'reconciliation', label: 'Reconciliation' },
-    { value: 'tracking', label: 'Tracking' },
-    { value: 'admin', label: 'Administration' }
-  ];
+  const activeCategories = categories.filter((cat: any) => cat.isActive);
 
   const priorities = [
     { value: 'low', label: 'Low', color: 'bg-green-100 text-green-800' },
@@ -172,11 +175,11 @@ export const TaskManagement: React.FC<TaskManagementProps> = ({ tasks, onUpdateT
               </label>
               <select
                 value={formData.category || 'admin'}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as Task['category'] })}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                {categories.map(cat => (
-                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                {activeCategories.map((cat: any) => (
+                  <option key={cat.id} value={cat.name.toLowerCase()}>{cat.name}</option>
                 ))}
               </select>
             </div>

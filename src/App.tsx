@@ -12,6 +12,8 @@ import { HistoryView } from './components/HistoryView';
 import { EmployeeDashboard } from './components/EmployeeDashboard';
 import { TaskManagement } from './components/TaskManagement';
 import { EmployeeManagement } from './components/EmployeeManagement';
+import { RoleManagement } from './components/RoleManagement';
+import { CategoryManagement } from './components/CategoryManagement';
 import { TeamStatusOverview } from './components/TeamStatusOverview';
 import { RecentActivities } from './components/RecentActivities';
 import { ActiveTasks } from './components/ActiveTasks';
@@ -24,7 +26,7 @@ import { formatDate, getMinutesBetween } from './utils/dateUtils';
 import { calculatePerformanceMetrics } from './utils/performanceUtils';
 
 function App() {
-  const [currentView, setCurrentView] = useState<'dashboard' | 'daily' | 'performance' | 'history' | 'manage' | 'employees'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'daily' | 'performance' | 'history' | 'manage' | 'employees' | 'roles' | 'categories'>('dashboard');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -145,13 +147,14 @@ function App() {
   };
 
   // Handle task notification
-  const handleSendTaskNotification = (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent') => {
+  const handleSendTaskNotification = (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent', method: 'email' | 'whatsapp' = 'email') => {
     const employee = employees.find(e => e.id === employeeId);
     const task = tasks.find(t => t.id === taskId);
     
     if (employee && task) {
       // In a real app, this would send an actual notification
-      alert(`${priority === 'urgent' ? 'Urgent notification' : 'Notification'} sent to ${employee.name} about "${task.name}"`);
+      const methodText = method === 'whatsapp' ? 'WhatsApp message' : 'Email notification';
+      alert(`${priority === 'urgent' ? 'Urgent' : 'Normal'} ${methodText} sent to ${employee.name} about "${task.name}"`);
       
       // You could also add this to a notifications system
       console.log('Notification sent:', {
@@ -159,9 +162,15 @@ function App() {
         task: task.name,
         message,
         priority,
+        method,
         timestamp: new Date()
       });
     }
+  };
+
+  // Handle WhatsApp notification
+  const handleSendWhatsAppNotification = (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent') => {
+    handleSendTaskNotification(taskId, employeeId, message, priority, 'whatsapp');
   };
 
   // Show login form if not authenticated
@@ -386,7 +395,9 @@ function App() {
     { id: 'performance', label: 'Performance', icon: BarChart3 },
     { id: 'history', label: 'History', icon: Archive },
     { id: 'manage', label: 'Manage Tasks', icon: Wrench },
-    { id: 'employees', label: 'Manage Employees', icon: Users }
+    { id: 'employees', label: 'Manage Employees', icon: Users },
+    { id: 'roles', label: 'Manage Roles', icon: Users },
+    { id: 'categories', label: 'Manage Categories', icon: Wrench }
   ];
 
   return (
@@ -605,6 +616,10 @@ function App() {
             onUpdateEmployees={setEmployees}
           />
         )}
+
+        {currentView === 'roles' && <RoleManagement />}
+
+        {currentView === 'categories' && <CategoryManagement />}
       </main>
 
       {/* User Profile Modal */}
@@ -647,6 +662,7 @@ function App() {
         task={selectedTaskForNotification?.task || null}
         employee={selectedTaskForNotification?.employee || null}
         onSendNotification={handleSendTaskNotification}
+        onSendWhatsApp={handleSendWhatsAppNotification}
       />
     </div>
   );

@@ -14,6 +14,7 @@ export const defaultUsers: User[] = [
       notifications: true,
       emailNotifications: true,
       smsNotifications: false,
+      whatsappNotifications: true,
       language: 'en'
     },
     lastLogin: new Date(),
@@ -33,6 +34,7 @@ export const defaultUsers: User[] = [
       notifications: true,
       emailNotifications: true,
       smsNotifications: true,
+      whatsappNotifications: true,
       language: 'en'
     },
     lastLogin: new Date(),
@@ -52,6 +54,7 @@ export const defaultUsers: User[] = [
       notifications: false,
       emailNotifications: false,
       smsNotifications: false,
+      whatsappNotifications: false,
       language: 'en'
     },
     lastLogin: new Date(),
@@ -71,6 +74,7 @@ export const defaultUsers: User[] = [
       notifications: true,
       emailNotifications: true,
       smsNotifications: true,
+      whatsappNotifications: true,
       language: 'en'
     },
     lastLogin: new Date(),
@@ -90,6 +94,7 @@ export const defaultUsers: User[] = [
       notifications: true,
       emailNotifications: true,
       smsNotifications: false,
+      whatsappNotifications: false,
       language: 'en'
     },
     lastLogin: new Date(),
@@ -109,6 +114,7 @@ export const defaultUsers: User[] = [
       notifications: false,
       emailNotifications: false,
       smsNotifications: false,
+      whatsappNotifications: false,
       language: 'en'
     },
     lastLogin: new Date(),

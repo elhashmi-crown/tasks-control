@@ -9,7 +9,7 @@ export interface Task {
   id: string;
   name: string;
   description: string;
-  category: 'reservations' | 'payments' | 'reconciliation' | 'tracking' | 'admin';
+  category: string;
   estimatedMinutes: number;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   isRecurring: boolean;
@@ -68,6 +68,7 @@ export interface User {
     notifications: boolean;
     emailNotifications: boolean;
     smsNotifications: boolean;
+    whatsappNotifications: boolean;
     language: string;
   };
   lastLogin: Date;

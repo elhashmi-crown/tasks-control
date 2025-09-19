@@ -111,8 +111,10 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onShowAccou
                   </div>
                   
                   <div className="px-4 py-2 border-t border-gray-100">
-                    <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                    <button 
                       onClick={markAllAsRead}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
                       Mark all as read
                     </button>
                   </div>

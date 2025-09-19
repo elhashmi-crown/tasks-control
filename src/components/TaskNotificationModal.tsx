@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send, Clock, AlertTriangle, User, MessageSquare } from 'lucide-react';
+import { X, Send, Clock, AlertTriangle, User, MessageSquare, MessageCircle } from 'lucide-react';
 import { Task, Employee } from '../types';
 
 interface TaskNotificationModalProps {
@@ -8,6 +8,7 @@ interface TaskNotificationModalProps {
   task: Task | null;
   employee: Employee | null;
   onSendNotification: (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent') => void;
+  onSendWhatsApp?: (taskId: string, employeeId: string, message: string, priority: 'normal' | 'urgent') => void;
 }
 
 export const TaskNotificationModal: React.FC<TaskNotificationModalProps> = ({
@@ -15,7 +16,8 @@ export const TaskNotificationModal: React.FC<TaskNotificationModalProps> = ({
   onClose,
   task,
   employee,
-  onSendNotification
+  onSendNotification,
+  onSendWhatsApp
 }) => {
   const [message, setMessage] = useState('');
   const [priority, setPriority] = useState<'normal' | 'urgent'>('normal');
@@ -61,6 +63,15 @@ export const TaskNotificationModal: React.FC<TaskNotificationModalProps> = ({
     setSelectedTemplate('');
     setPriority('normal');
     onClose();
+  };
+
+  const handleSendWhatsApp = () => {
+    if (!message.trim()) {
+      alert('Please enter a message');
+      return;
+    }
+
+    onSendWhatsApp?.(task.id, employee.id, message, priority);
   };
 
   const handleTemplateSelect = (template: typeof messageTemplates[0]) => {
@@ -199,21 +210,33 @@ export const TaskNotificationModal: React.FC<TaskNotificationModalProps> = ({
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
+            
+            {onSendWhatsApp && (
+              <button
+                onClick={handleSendWhatsApp}
+                disabled={!message.trim()}
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Send via WhatsApp
+              </button>
+            )}
+            
             <button
               onClick={handleSend}
               disabled={!message.trim()}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
+              className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${
                 priority === 'urgent'
                   ? 'bg-orange-600 hover:bg-orange-700'
                   : 'bg-blue-600 hover:bg-blue-700'
               } disabled:bg-gray-300 disabled:cursor-not-allowed`}
             >
               <Send className="w-4 h-4" />
-              {priority === 'urgent' ? 'Send Urgent Notification' : 'Send Notification'}
+              Send Email
             </button>
           </div>
         </div>

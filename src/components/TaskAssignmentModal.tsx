@@ -25,18 +25,23 @@ export const TaskAssignmentModal: React.FC<TaskAssignmentModalProps> = ({
 
   // Get unassigned tasks
   const unassignedTasks = tasks.filter(task => 
-    !assignments.some(assignment => 
-      assignment.taskId === task.id && assignment.status !== 'completed'
-    )
+    !assignments.some(assignment => {
+      const today = new Date().toISOString().split('T')[0];
+      return assignment.taskId === task.id && 
+             assignment.date === today && 
+             assignment.status !== 'completed';
+    })
   );
 
   // Get employee availability
   const getEmployeeStatus = (employeeId: string) => {
+    const today = new Date().toISOString().split('T')[0];
     const activeAssignments = assignments.filter(assignment => 
       assignment.employeeId === employeeId && 
+      assignment.date === today &&
       (assignment.status === 'in_progress' || assignment.status === 'not_started')
     );
-    return activeAssignments.length > 0 ? 'busy' : 'available';
+    return activeAssignments.length >= 3 ? 'busy' : 'available'; // Allow multiple tasks per employee
   };
 
   // Get available employees (not busy) or all employees if showAllEmployees is true
