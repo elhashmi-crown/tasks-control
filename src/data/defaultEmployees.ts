@@ -15,7 +15,7 @@ export const defaultEmployees: Employee[] = [
     name: 'Mazen Ali',
     role: 'Reservations Specialist',
     isActive: true,
-    email: 'tam.elhashmy@gmail.com',
+    email: 'Mazin@crownbs.com',
     phone: '+201202677818',
     temporaryPassword: 'temp456'
   },
@@ -24,7 +24,7 @@ export const defaultEmployees: Employee[] = [
     name: 'Mostafa 3rif',
     role: 'Payments Coordinator',
     isActive: true,
-    email: 'tam.elhashmy@gmail.com',
+    email: 'Mostafa@crownbs.com',
     phone: '+201202677818',
     temporaryPassword: 'temp789'
   },
@@ -33,7 +33,7 @@ export const defaultEmployees: Employee[] = [
     name: 'David Rodriguez',
     role: 'Occupancy Analyst',
     isActive: true,
-    email: 'tam.elhashmy@gmail.com',
+    email: 'David@gmail.com',
     phone: '+201202677818',
     temporaryPassword: 'temp101'
   },
@@ -42,7 +42,7 @@ export const defaultEmployees: Employee[] = [
     name: 'Monica Nagy',
     role: 'Reconciliation Specialist',
     isActive: true,
-    email: 'tam.elhashmy@gmail.com',
+    email: 'Monica@crownbs.com',
     phone: '+201202677818',
     temporaryPassword: 'temp202'
   }
