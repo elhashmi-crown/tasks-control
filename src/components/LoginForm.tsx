@@ -65,9 +65,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSignUp, isLoadi
   };
 
   const demoAccounts = [
-    { email: 'tamer@hospitality.com', password: 'leader123', role: 'Team Leader' },
-    { email: 'sarah@hospitality.com', password: 'emp123', role: 'Employee' },
-    { email: 'michael@hospitality.com', password: 'emp123', role: 'Employee' }
+    { email: 'tam.elhashmy@gmail.com', password: 'leader123', role: 'Team Leader' },
+    { email: 'Khaled@crownbs.com', password: 'emp123', role: 'Employee' },    
+    { email: 'Monica@crownbs.com', password: 'emp123', role: 'Employee' },
+    { email: 'Mostafa@crownbs.com', password: 'emp123', role: 'Employee' },
+    { email: 'mazen@crownbs.com', password: 'emp123', role: 'Employee' }
   ];
 
   return (
