@@ -15,22 +15,32 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
   const [formData, setFormData] = useState<Partial<Employee>>({
     name: '',
     role: '',
-    isActive: true
+    isActive: true,
+    email: '',
+    phone: '',
+    temporaryPassword: ''
   });
 
   const activeRoles = roles.filter((role: any) => role.isActive);
 
   const handleSaveEmployee = () => {
-    if (!formData.name?.trim() || !formData.role?.trim()) {
-      alert('Please fill in all required fields');
+    if (!formData.name?.trim() || !formData.role?.trim() || !formData.email?.trim()) {
+      alert('Please fill in all required fields (Name, Role, Email)');
       return;
     }
+
+    // Generate temporary password if not provided
+    const tempPassword = formData.temporaryPassword?.trim() || 
+      `temp${Math.random().toString(36).substr(2, 6)}`;
 
     const employeeData: Employee = {
       id: editingEmployee || `emp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: formData.name.trim(),
       role: formData.role.trim(),
-      isActive: formData.isActive ?? true
+      isActive: formData.isActive ?? true,
+      email: formData.email.trim(),
+      phone: formData.phone?.trim() || '',
+      temporaryPassword: tempPassword
     };
 
     if (editingEmployee) {
@@ -78,7 +88,10 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
     setFormData({
       name: '',
       role: '',
-      isActive: true
+      isActive: true,
+      email: '',
+      phone: '',
+      temporaryPassword: ''
     });
   };
 
@@ -134,6 +147,32 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={formData.email || ''}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter employee email"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={formData.phone || ''}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter phone number"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Role/Position *
               </label>
               <select
@@ -148,6 +187,19 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
               </select>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Temporary Password
+              </label>
+              <input
+                type="text"
+                value={formData.temporaryPassword || ''}
+                onChange={(e) => setFormData({ ...formData, temporaryPassword: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Auto-generated if empty"
+              />
+              <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate</p>
+            </div>
             <div className="flex items-center">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <input
@@ -196,7 +248,13 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
                   Employee Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contact Info
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Role/Position
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Temp Password
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -214,10 +272,24 @@ export const EmployeeManagement: React.FC<EmployeeManagementProps> = ({ employee
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                         <User className="w-4 h-4 text-blue-600" />
                       </div>
-                      <div className="text-sm font-medium text-gray-900">{employee.name}</div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{employee.name}</div>
+                        <div className="text-xs text-gray-500">{employee.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    <div>
+                      <div>{employee.email}</div>
+                      <div className="text-xs text-gray-500">{employee.phone || 'No phone'}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">{employee.role}</td>
+                  <td className="px-6 py-4">
+                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                      {employee.temporaryPassword || 'Not set'}
+                    </code>
+                  </td>
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Active

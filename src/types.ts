@@ -3,6 +3,9 @@ export interface Employee {
   name: string;
   role: string;
   isActive: boolean;
+  email?: string;
+  phone?: string;
+  temporaryPassword?: string;
 }
 
 export interface Task {

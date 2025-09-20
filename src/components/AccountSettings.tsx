@@ -24,6 +24,8 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({ user, onUpdate
 
   const handleSave = () => {
     onUpdateUser(formData);
+    // Save notification preferences to localStorage
+    localStorage.setItem('user_preferences', JSON.stringify(formData.preferences));
     alert('Settings saved successfully!');
   };
 

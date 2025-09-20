@@ -270,6 +270,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSignUp, isLoadi
                 </label>
                 <button
                   type="button"
+                 onClick={() => alert('Password reset functionality would be implemented here. In production, this would send a reset email to the user.')}
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Forgot password?

@@ -11,27 +11,34 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onShowAccountSettings, onLogout }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [notifications] = useState([
-    { id: 1, title: 'New task assigned', message: 'Revenue Reconciliation task assigned to you', unread: true },
-    { id: 2, title: 'Task completed', message: 'Sarah completed Card Payments task', unread: true },
-    { id: 3, title: 'Daily report ready', message: 'Yesterday\'s performance report is available', unread: false }
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'New task assigned', message: 'Revenue Reconciliation task assigned to you', unread: true, taskId: 'task-5' },
+    { id: 2, title: 'Task completed', message: 'Sarah completed Card Payments task', unread: true, taskId: 'task-3' },
+    { id: 3, title: 'Daily report ready', message: 'Yesterday\'s performance report is available', unread: false, taskId: null }
   ]);
   const [showNotifications, setShowNotifications] = useState(false);
   
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAllAsRead = () => {
-    // In a real app, this would update the backend
-    notifications.forEach(n => n.unread = false);
-    // Force re-render by updating state
-    setShowNotifications(false);
-    setTimeout(() => setShowNotifications(true), 0);
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
   };
 
   const markAsRead = (notificationId: number) => {
-    const notification = notifications.find(n => n.id === notificationId);
-    if (notification) {
-      notification.unread = false;
+    setNotifications(prev => prev.map(n => 
+      n.id === notificationId ? { ...n, unread: false } : n
+    ));
+  };
+
+  const handleNotificationClick = (notification: any) => {
+    markAsRead(notification.id);
+    
+    // Navigate to task management or open task details
+    if (notification.taskId) {
+      // In a real app, this would navigate to the specific task
+      alert(`Opening task details for: ${notification.title}\nTask ID: ${notification.taskId}`);
+      // You could implement navigation here:
+      // navigate(`/task/${notification.taskId}`);
     }
   };
 
@@ -97,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onShowProfile, onShowAccou
                       <div 
                         key={notification.id} 
                         className={`px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${notification.unread ? 'bg-blue-50' : ''}`}
-                        onClick={() => markAsRead(notification.id)}
+                        onClick={() => handleNotificationClick(notification)}
                       >
                         <div className="flex items-start gap-3">
                           <div className={`w-2 h-2 rounded-full mt-2 ${notification.unread ? 'bg-blue-500' : 'bg-gray-300'}`} />

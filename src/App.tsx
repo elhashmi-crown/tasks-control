@@ -74,6 +74,7 @@ function App() {
         notifications: true,
         emailNotifications: true,
         smsNotifications: false,
+        whatsappNotifications: true,
         language: 'en'
       },
       lastLogin: new Date(),
@@ -86,7 +87,10 @@ function App() {
         id: `emp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: userData.name,
         role: userData.department || 'General Staff',
-        isActive: true
+        isActive: true,
+        email: userData.email,
+        phone: userData.phone,
+        temporaryPassword: `temp${Math.random().toString(36).substr(2, 6)}`
       };
       
       newUser.employeeId = newEmployee.id;
@@ -109,23 +113,32 @@ function App() {
     // Find user by email
     const user = users.find(u => u.email === email);
     
-    // Simple password validation (in real app, this would be hashed)
-    const validPasswords: { [key: string]: string } = {
-      'tamer@hospitality.com': 'leader123',
-      'sarah@hospitality.com': 'emp123',
-      'michael@hospitality.com': 'emp123',
-      'emma@hospitality.com': 'emp123',
-      'david@hospitality.com': 'emp123',
-      'lisa@hospitality.com': 'emp123'
-    };
-    
-    if (user && validPasswords[email] === password) {
-      // Update last login
-      const updatedUser = { ...user, lastLogin: new Date() };
-      setUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+    if (user) {
+      // Check if it's a demo account
+      const validPasswords: { [key: string]: string } = {
+        'tamer@hospitality.com': 'leader123',
+        'sarah@hospitality.com': 'emp123',
+        'michael@hospitality.com': 'emp123',
+        'emma@hospitality.com': 'emp123',
+        'david@hospitality.com': 'emp123',
+        'lisa@hospitality.com': 'emp123'
+      };
       
-      setCurrentUser(updatedUser);
-      setIsAuthenticated(true);
+      // Check demo passwords or employee temporary passwords
+      const isValidPassword = validPasswords[email] === password ||
+        (user.role === 'employee' && user.employeeId && 
+         employees.find(e => e.id === user.employeeId)?.temporaryPassword === password);
+    
+      if (isValidPassword) {
+        // Update last login
+        const updatedUser = { ...user, lastLogin: new Date() };
+        setUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+        
+        setCurrentUser(updatedUser);
+        setIsAuthenticated(true);
+      } else {
+        setLoginError('Invalid email or password');
+      }
     } else {
       setLoginError('Invalid email or password');
     }
@@ -208,6 +221,15 @@ function App() {
     };
 
     setAssignments(prev => [...prev, newAssignment]);
+    
+    // Send automatic WhatsApp notification when task is assigned
+    const task = tasks.find(t => t.id === taskId);
+    const employee = employees.find(e => e.id === employeeId);
+    
+    if (task && employee) {
+      const autoMessage = `Hi ${employee.name}! You have been assigned a new task: "${task.name}". Priority: ${task.priority.toUpperCase()}. Estimated time: ${task.estimatedMinutes} minutes. Please start when ready.`;
+      handleSendWhatsAppNotification(taskId, employeeId, autoMessage, task.priority === 'urgent' ? 'urgent' : 'normal');
+    }
   };
 
   const unassignTask = (taskId: string) => {
