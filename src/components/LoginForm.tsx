@@ -80,8 +80,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSignUp, isLoadi
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-4">
             <Building2 className="w-8 h-8 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Leader Tasks Manager</h1>
-          <p className="text-blue-200">Income Team Task Management System</p>
+          <h1 className="text-3xl font-bold text-white mb-2">CrownBs Hospitality Manager</h1>
+          <p className="text-blue-200">Leader Task Management System</p>
         </div>
 
         {/* Login Card */}
