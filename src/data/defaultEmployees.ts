@@ -6,7 +6,7 @@ export const defaultEmployees: Employee[] = [
     name: 'Khaled Zatot',
     role: 'Senior Revenue Analyst',
     isActive: true,
-    email: 'tam.elhashmy@gmail.com',
+    email: 'Khaled@crownbs.com',
     phone: '+201202677818',
     temporaryPassword: 'temp123'
   },
