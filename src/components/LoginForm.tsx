@@ -327,7 +327,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSignUp, isLoadi
 
         {/* Footer */}
         <div className="text-center mt-8 text-blue-200 text-sm">
-          <p>&copy; 2024 Hospitality Manager. All rights reserved.</p>
+          <p>&copy; 2024 CrownBs Hospitality Manager. All rights reserved.</p>
         </div>
       </div>
     </div>
