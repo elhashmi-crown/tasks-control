@@ -3,10 +3,10 @@ import { User } from '../types';
 export const defaultUsers: User[] = [
   {
     id: 'user-leader-1',
-    email: 'tamer@hospitality.com',
+    email: 'tam.elhashmy@gmail.com',
     name: 'Tamer',
     role: 'team_leader',
-    phone: '+1-555-0101',
+    phone: '+201202677818',
     department: 'Revenue Management',
     twoFactorEnabled: false,
     preferences: {
@@ -22,11 +22,11 @@ export const defaultUsers: User[] = [
   },
   {
     id: 'user-emp-1',
-    email: 'sarah@hospitality.com',
-    name: 'Sarah Johnson',
+    email: 'Mazen@crownbs.com',
+    name: 'Mazen Ali',
     role: 'employee',
     employeeId: 'emp-1',
-    phone: '+1-555-0102',
+    phone: '+201202677818',
     department: 'Revenue Analysis',
     twoFactorEnabled: false,
     preferences: {
@@ -42,11 +42,11 @@ export const defaultUsers: User[] = [
   },
   {
     id: 'user-emp-2',
-    email: 'michael@hospitality.com',
-    name: 'Michael Chen',
+    email: 'Monica@crownbs.com',
+    name: 'Monica Ali',
     role: 'employee',
     employeeId: 'emp-2',
-    phone: '+1-555-0103',
+    phone: '+201202677818',
     department: 'Reservations',
     twoFactorEnabled: true,
     preferences: {
@@ -62,11 +62,11 @@ export const defaultUsers: User[] = [
   },
   {
     id: 'user-emp-3',
-    email: 'emma@hospitality.com',
-    name: 'Emma Williams',
+    email: 'Mostafa@crownbs.com',
+    name: 'Mostafa 3rif',
     role: 'employee',
     employeeId: 'emp-3',
-    phone: '+1-555-0104',
+    phone: '+201202677818',
     department: 'Payments',
     twoFactorEnabled: false,
     preferences: {
@@ -82,11 +82,11 @@ export const defaultUsers: User[] = [
   },
   {
     id: 'user-emp-4',
-    email: 'david@hospitality.com',
-    name: 'David Rodriguez',
+    email: 'Khaled@crownbs.com',
+    name: 'Khaled Zatot',
     role: 'employee',
     employeeId: 'emp-4',
-    phone: '+1-555-0105',
+    phone: '+201202677818',
     department: 'Occupancy Analysis',
     twoFactorEnabled: false,
     preferences: {
